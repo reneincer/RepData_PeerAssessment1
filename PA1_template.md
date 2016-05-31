@@ -1,21 +1,17 @@
----
-title: "Reproducible Research: Peer Assessment 1, by Rene Incer"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1, by Rene Incer
 
-```{r setoptions,echo=TRUE}
-```
+
 
 ## 1. Code for reading in the dataset and/or processing the data
 #### Loading libray for plotting
-```{r lib}
+
+```r
     library(lattice)
 ```
 
 #### Loading and preprocessing the data
-```{r dataloading}
+
+```r
     #unzipping activity
     activity <- unzip("activity.zip")
     #rading csv
@@ -27,7 +23,8 @@ output:
 
 ## 2. Histogram of the total number of steps taken each day
 #### Histogram
-```{r histogram1}
+
+```r
     #group by date and aggregate sum of steps
     groupedData <- aggregate(steps ~ date, dataClean, sum)
 
@@ -36,22 +33,34 @@ output:
          xlab="Total steps taken each day",
          main="Histogram total steps taken each day",
          col="blue")
-     
 ```
+
+![](PA1_template_files/figure-html/histogram1-1.png)<!-- -->
 
 ## 3. What is mean total number of steps taken per day?
 #### The Mean is: 
-```{r mean1}
+
+```r
     mean(groupedData$steps)
 ```
+
+```
+## [1] 10766.19
+```
 #### The Median is: 
-```{r median1}
+
+```r
     median(groupedData$steps)
+```
+
+```
+## [1] 10765
 ```
 
 ## 4. Time series plot of the average number of steps taken
 
-```{r timeseries1}
+
+```r
     #group by interval, mean of steps
     groupedData <- aggregate(steps ~ interval, dataClean, mean)
     
@@ -63,33 +72,55 @@ output:
          ylab="Average steps")
 ```
 
+![](PA1_template_files/figure-html/timeseries1-1.png)<!-- -->
+
 ## 5. The 5-minute interval that, on average, contains the maximum number of steps
-```{r intervalmax}
+
+```r
     #max steps
     max(groupedData$steps)
+```
+
+```
+## [1] 206.1698
+```
+
+```r
     #index of max steps
     indexMax <- which.max(groupedData$steps)
     #row data 
     groupedData[indexMax,]
 ```
 
+```
+##     interval    steps
+## 104      835 206.1698
+```
+
 
 ## 6. Imputing missing values
 #### Count of NA rows 
-```{r naRows}
+
+```r
     # dataNA row count 
     nrow(dataNA)
 ```
 
+```
+## [1] 2304
+```
+
 #### A strategy for filling in all of the missing values in the dataset
 I used mean interval values. I merged my previous calculated mean and merged with NA rows
-```{r merging}
+
+```r
     #merging by interval
     dataNA <- merge(dataNA,groupedData,by.x="interval",by.y="interval",all=TRUE)
 ```
 
 #### New dataset
-```{r newdataset}
+
+```r
     #binding sames columns of original data
     dataNA <- cbind.data.frame(dataNA$steps.y, dataNA$date, dataNA$interval)
     #asigning same names of original
@@ -100,7 +131,8 @@ I used mean interval values. I merged my previous calculated mean and merged wit
 
 ## 7. Histogram of the total number of steps taken each day after missing values are imputed
 #### Plot
-```{r histogram2}
+
+```r
     #group by date, same part 2
     groupedData <- aggregate(steps ~ date, newDataset, sum)
 
@@ -111,15 +143,27 @@ I used mean interval values. I merged my previous calculated mean and merged wit
          col="blue")
 ```
 
+![](PA1_template_files/figure-html/histogram2-1.png)<!-- -->
+
 #### Mean and Median
 
 The Mean is: 
-```{r mean2}
+
+```r
     mean(groupedData$steps)
 ```
+
+```
+## [1] 10766.19
+```
 The Median is: 
-```{r median2}
+
+```r
     median(groupedData$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 
@@ -133,8 +177,8 @@ There is a minimal difference, and it does'nt impact results.
 
 ## 8. Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
 
-```{r comparing}
 
+```r
     #new column with day of the week
     newDataset['day'] <- weekdays(as.Date(newDataset$date))
     #new column with type of the day using simple ifelse
@@ -145,8 +189,9 @@ There is a minimal difference, and it does'nt impact results.
     #plotting steps intervals splitting by daytype
     xyplot(steps ~ interval | dayType, groupedData, type = "l", 
            layout = c(1, 2), xlab = "5 minutes interval (From 00:00 to 23:55)", ylab = "Number of steps")
-
 ```
+
+![](PA1_template_files/figure-html/comparing-1.png)<!-- -->
 
 This person walks more on weekdays, between 8 and 9 am. Maybe because people walks to work.
 
